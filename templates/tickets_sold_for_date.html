@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tickets Sold for Date</title>
+</head>
+<body>
+<h1>Tickets Sold for Date</h1>
+<form method="POST" action="{{ url_for('d_attendance') }}">
+    <label for="specific_date">Enter Specific Date:</label>
+    <input type="date" id="specific_date" name="specific_date" required>
+    <button type="submit">Submit</button>
+</form>
+
+{% if result %}
+<table border="1">
+    <tr>
+        <th>Specific Date</th>
+        <th>Total Tickets Sold</th>
+    </tr>
+    {% for row in result %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endif %}
+</body>
+</html>

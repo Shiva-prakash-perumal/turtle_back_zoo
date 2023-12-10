@@ -41,7 +41,7 @@ def d_attractions():
             SELECT
                 re.id AS revenue_type_id,
                 re.name AS revenue_type_name,
-                rev.date_time AS showing_date,
+                DATE(rev.date_time) AS showing_date,
                 rev.tickets_sold AS attendance,
                 CASE
                     WHEN rev.adult_tickets > 0 THEN rev.adult_price * rev.adult_tickets
@@ -54,9 +54,9 @@ def d_attractions():
             JOIN
                 revenue_event rev ON re.id = rev.r_id
             WHERE
-                rev.date_time = %s
+                DATE(rev.date_time) = %s
             ORDER BY
-                re.id, rev.date_time
+                re.id, DATE(rev.date_time)
         ''', (date,))
 
         results = cur.fetchall()
@@ -75,10 +75,10 @@ def d_concessions():
         cur = mysql.connection.cursor()
         query = (
             "SELECT re.id AS revenue_type_id, re.name AS revenue_type_name, re.type, "
-            "rv.date_time, rv.revenue, rv.tickets_sold "
+            "DATE(rv.date_time), rv.revenue, rv.tickets_sold "
             "FROM revenue_types re "
             "JOIN revenue_event rv ON re.id = rv.r_id "
-            "WHERE re.type = 'Conc' AND rv.date_time = %s"
+            "WHERE re.type = 'Conc' AND DATE(rv.date_time) = %s"
         )
         cur.execute(query, (date,))
         result = cur.fetchall()
@@ -90,7 +90,24 @@ def d_concessions():
 
 @app.route('/d_attendance')
 def d_attendance():
-    return render_template('d_attendance.html')
+    if request.method == 'POST':
+        specific_date = request.form['specific_date']
+
+        # Execute the SQL query
+        cur = mysql.connection.cursor()
+        query = (
+            "SELECT DATE(rv.date_time) AS specific_date, SUM(rv.tickets_sold) AS total_tickets_sold "
+            "FROM revenue_event rv "
+            "WHERE DATE(rv.date_time) = %s "
+            "GROUP BY DATE(rv.date_time)"
+        )
+        cur.execute(query, (specific_date,))
+        result = cur.fetchall()
+        cur.close()
+
+        return render_template('tickets_sold_for_date.html', result=result)
+
+    return render_template('tickets_sold_for_date.html', result=None)
 
 
 @app.route('/management_and_reporting')
