@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Concessions Revenue</title>
+</head>
+<body>
+<h1>Daily Revenue Result</h1>
+<table border="1">
+    <tr>
+        <th>Revenue Type ID</th>
+        <th>Revenue Type Name</th>
+        <th>Type</th>
+        <th>Date Time</th>
+        <th>Revenue</th>
+        <th>Tickets Sold</th>
+    </tr>
+    {% for row in result %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+        <td>{{ row[3] }}</td>
+        <td>{{ row[4] }}</td>
+        <td>{{ row[5] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+</body>
+</html>

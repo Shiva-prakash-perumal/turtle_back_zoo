@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Animals</title>
+</head>
+<body>
+<h1>Animals</h1>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Status</th>
+        <th>Birth Year</th>
+        <th>Species ID</th>
+        <th>Building ID</th>
+        <th>Enclosure ID</th>
+        <th>Action</th>
+    </tr>
+    {% for animal in animals %}
+    <tr>
+        <td>{{ animal[0] }}</td>
+        <td>{{ animal[1] }}</td>
+        <td>{{ animal[2] }}</td>
+        <td>{{ animal[3] }}</td>
+        <td>{{ animal[4] }}</td>
+        <td>{{ animal[5] }}</td>
+        <td><a href="{{ url_for('update_animal', animal_id=animal[0]) }}">Update</a></td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<br>
+<br>
+<a href="{{ url_for('main_page') }}">Go Back to Animals Menu</a>
+</body>
+</html>

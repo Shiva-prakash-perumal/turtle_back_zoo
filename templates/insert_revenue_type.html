@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Revenue Type</title>
+</head>
+<body>
+<h1>Insert Revenue Type</h1>
+<form method="POST">
+    <label>Name:</label>
+    <input type="text" name="name" required><br>
+    <label>Type:</label>
+    <input type="text" name="type" required><br>
+    <label>Building ID:</label>
+    <input type="text" name="b_id" required><br>
+    <label>Adult Price:</label>
+    <input type="text" name="adult_price" required><br>
+    <label>Child Price:</label>
+    <input type="text" name="child_price" required><br>
+    <label>Senior Price:</label>
+    <input type="text" name="senior_price" required><br>
+    <label>Per Day:</label>
+    <input type="text" name="perday" required><br>
+    <label>Product:</label>
+    <input type="text" name="product" required><br>
+    <button type="submit">Insert</button>
+</form>
+<br>
+<a href="{{ url_for('view_revenue_types') }}">Go back to View Revenue Types</a>
+</body>
+</html>

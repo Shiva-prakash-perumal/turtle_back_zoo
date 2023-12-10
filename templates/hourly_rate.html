@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turtleback Zoo Asset Management</title>
+</head>
+<body>
+<h1>Employee Hourly rate Management</h1>
+<ul>
+    <li><a href="{{ url_for('view_hourly_rate') }}">View Hourly rate</a></li>
+    <li><a href="{{ url_for('insert_hourly_rate') }}">Insert Hourly rate</a></li>
+    <li><a href="{{ url_for('update_hourly_rate', hourly_rate_id=1) }}">Update Hourly rate</a></li>
+</ul>
+<a href="{{ url_for('asset_management') }}">Go Back to Assets Menu</a>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Revenue Types</title>
+</head>
+<body>
+<h1>Revenue Types</h1>
+<table border="1">
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Building ID</th>
+        <th>Adult Price</th>
+        <th>Child Price</th>
+        <th>Senior Price</th>
+        <th>Per Day</th>
+        <th>Product</th>
+        <th>Action</th>
+    </tr>
+    {% for revenue_type in revenue_types %}
+    <tr>
+        <td>{{ revenue_type[0] }}</td>
+        <td>{{ revenue_type[1] }}</td>
+        <td>{{ revenue_type[2] }}</td>
+        <td>{{ revenue_type[3] }}</td>
+        <td>{{ revenue_type[4] }}</td>
+        <td>{{ revenue_type[5] }}</td>
+        <td>{{ revenue_type[6] }}</td>
+        <td>{{ revenue_type[7] }}</td>
+        <td>{{ revenue_type[8] }}</td>
+        <td>
+            <a href="{{ url_for('update_revenue_type', revenue_type_id=revenue_type[0]) }}">Update</a>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+<br>
+<a href="{{ url_for('insert_revenue_type') }}">Insert New Revenue Type</a>
+</body>
+</html>

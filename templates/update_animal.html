@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Animal</title>
+</head>
+<body>
+<h1>Update Animal</h1>
+<form method="POST">
+    <label>Status:</label>
+    <input type="text" name="status" value="{{ animal[1] }}" required><br>
+    <label>Birth Year:</label>
+    <input type="text" name="birthyear" value="{{ animal[2] }}" required><br>
+    <label>Species ID:</label>
+    <select name="s_id" required>
+        {% for species in species %}
+        <option value="{{ species[0] }}" {% if species[0] == animal[3] %}selected{% endif %}>{{ species[1] }}</option>
+        {% endfor %}
+    </select><br>
+    <label>Building ID:</label>
+    <select name="b_id" required>
+        {% for building in buildings %}
+        <option value="{{ building[0] }}" {% if building[0] == animal[4] %}selected{% endif %}>{{ building[1] }}</option>
+        {% endfor %}
+    </select><br>
+    <label>Enclosure ID:</label>
+    <select name="enclo_id" required>
+        {% for enclosure in enclosures %}
+        <option value="{{ enclosure[0] }}" {% if enclosure[0] == animal.enclo_id %}selected{% endif %}>{{ enclosure[1] }}</option>
+        {% endfor %}
+    </select><br>
+    <button type="submit">Update</button>
+</form>
+<a href="{{ url_for('main_page') }}">Go Back to Animals Menu</a>up
+</body>
+</html>

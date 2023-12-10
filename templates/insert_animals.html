@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Animal</title>
+    <style>
+        /* Add your styles for the modal here */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<h1>Insert Animal</h1>
+
+<!-- Display flashed messages -->
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+<ul class="flash-messages">
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endwith %}
+
+<form method="POST" action="{{ url_for('insert_animal') }}" onsubmit="return validateForm()">
+    <label>ID:</label>
+    <input type="text" name="id" id="id" required><br>
+    <label>Status:</label>
+    <input type="text" name="status" required><br>
+    <label>Birth Year:</label>
+    <input type="text" name="birthyear" required><br>
+    <label>Species ID:</label>
+    <select name="s_id" required>
+        {% for species in species %}
+        <option value="{{ species[0] }}">{{ species[1] }}</option>
+        {% endfor %}
+    </select><br>
+    <label>Building ID:</label>
+    <select name="b_id" required>
+        {% for building in buildings %}
+        <option value="{{ building[0] }}">{{ building[1] }}</option>
+        {% endfor %}
+    </select><br>
+    <label>Enclosure ID:</label>
+    <select name="enclo_id" required>
+        {% for enclosure in enclosures %}
+        <option value="{{ enclosure[0] }}">{{ enclosure[1] }}</option>
+        {% endfor %}
+    </select><br>
+    <button type="submit">Submit</button>
+</form>
+
+<!-- The Modal -->
+<div id="myModal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <p>Duplicate entry! Please enter a unique ID.</p>
+    </div>
+</div>
+
+<script>
+    // Function to validate the form and show modal if needed
+    function validateForm() {
+        var idValue = document.getElementById('id').value;
+        // Perform a check for duplicate ID (you might need to adapt this based on your specific case)
+        if (idValue === 'existing_id') {
+            // Show the modal
+            document.getElementById('myModal').style.display = 'block';
+            return false; // Prevent form submission
+        }
+        return true; // Allow form submission
+    }
+
+    // Function to close the modal
+    function closeModal() {
+        document.getElementById('myModal').style.display = 'none';
+    }
+
+
+</script>
+<!-- "Go Back to Main Menu" button -->
+<br>
+<br>
+<br>
+<a href="{{ url_for('main_page') }}">Go Back to Animals Menu</a>
+</body>
+</html>

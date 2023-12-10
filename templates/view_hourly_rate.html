@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Hourly Rate</title>
+</head>
+<body>
+    <h1>Hourly Rate</h1>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Rate</th>
+            <th>Action</th>
+        </tr>
+        {% for rate in hourly_rate %}
+            <tr>
+                <td>{{ rate[0] }}</td>
+                <td>{{ rate[1] }}</td>
+                <td>
+                    <a href="{{ url_for('update_hourly_rate', hourly_rate_id=rate[0]) }}">Update</a>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="{{ url_for('insert_hourly_rate') }}">Insert New Hourly Rate</a>
+    <br>
+    <a href="{{ url_for('employee_hourly_rate') }}">Go Back to Hourly Rate Menu</a>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Zoo Activity</title>
+</head>
+<body>
+<h1>Daily Zoo Activity</h1>
+
+<ul>
+    <li><a href="{{ url_for('d_attractions') }}">Attractions</a></li>
+    <li><a href="{{ url_for('d_concessions') }}">Concessions</a></li>
+    <li><a href="{{ url_for('d_attendance') }}">Attendance</a></li>
+</ul>
+
+<br>
+
+<a href="{{ url_for('landing_page') }}">Go Back to Main Menu</a>
+</body>
+</html>

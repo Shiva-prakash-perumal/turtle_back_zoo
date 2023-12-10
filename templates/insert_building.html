@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insert Building</title>
+</head>
+<body>
+<h1>Insert Building</h1>
+<!-- Your existing HTML code -->
+<form method="POST" action="{{ url_for('insert_building') }}">
+    <label>ID:</label>
+    <input type="text" name="id" required><br>
+    <label>Name:</label>
+    <input type="text" name="name" required><br>
+    <label>Type:</label>
+    <input type="text" name="type" required><br>
+    <button type="submit">Insert</button>
+</form>
+<br>
+<br>
+<br>
+<a href="{{ url_for('buildings') }}">Go Back to Buildings Menu</a>
+</body>
+</html>

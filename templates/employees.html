@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turtleback Zoo Asset Management</title>
+</head>
+<body>
+<h1>Employees Asset Management</h1>
+<ul>
+    <li><a href="{{ url_for('view_employees') }}">View Employees</a></li>
+    <li><a href="{{ url_for('insert_employee') }}">Insert Employees</a></li>
+    <li><a href="{{ url_for('update_employee', employee_id=1) }}">Update Employees</a></li>
+</ul>
+<a href="{{ url_for('asset_management') }}">Go Back to Assets Menu</a>
+</body>
+</html>

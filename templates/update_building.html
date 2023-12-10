@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Building</title>
+</head>
+<body>
+<h1>Update Building</h1>
+<form method="POST" >
+    <!-- Input for updating the name of the building -->
+    <label>Name:</label>
+    <input type="text" name="name" value="{{ building['name'] }}" required><br>
+
+    <!-- Input for updating the type of the building -->
+    <label>Type:</label>
+    <input type="text" name="type" value="{{ building['type'] }}" required><br>
+
+    <!-- Dropdown list for selecting the building ID (b_id) -->
+<!--    <label>Building ID:</label>-->
+<!--    <select name="b_id" required>-->
+<!--        {% for building_id in building_ids %}-->
+<!--        <option value="{{ building_id }}" {% if building_id == building['b_id'] %}selected{% endif %}>{{ building_id }}</option>-->
+<!--        {% endfor %}-->
+<!--    </select><br>-->
+
+    <!-- Submit button to update the building information -->
+    <button type="submit">Update</button>
+</form>
+<br>
+<!-- Link to go back to View Buildings -->
+<a href="{{ url_for('view_buildings') }}">Go back to View Buildings</a>
+</body>
+</html>

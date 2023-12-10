@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Revenue Type</title>
+</head>
+<body>
+<h1>Update Revenue Type</h1>
+<form method="POST" action="{{ url_for('update_revenue_type', revenue_type_id=revenue_type[0]) }}">
+    <label>Name:</label>
+    <input type="text" name="name" value="{{ revenue_type[1] }}" required><br>
+    <label>Type:</label>
+    <input type="text" name="type" value="{{ revenue_type[2] }}" required><br>
+    <label>Building ID:</label>
+    <input type="text" name="b_id" value="{{ revenue_type[3] }}" required><br>
+    <label>Adult Price:</label>
+    <input type="text" name="adult_price" value="{{ revenue_type[4] }}" required><br>
+    <label>Child Price:</label>
+    <input type="text" name="child_price" value="{{ revenue_type[5] }}" required><br>
+    <label>Senior Price:</label>
+    <input type="text" name="senior_price" value="{{ revenue_type[6] }}" required><br>
+    <label>Per Day:</label>
+    <input type="text" name="perday" value="{{ revenue_type[7] }}" required><br>
+    <label>Product:</label>
+    <input type="text" name="product" value="{{ revenue_type[8] }}" required><br>
+    <button type="submit">Update</button>
+</form>
+<br>
+<a href="{{ url_for('view_revenue_types') }}">Go back to View Revenue Types</a>
+</body>
+</html>
