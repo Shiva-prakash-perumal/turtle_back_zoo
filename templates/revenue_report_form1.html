@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Report Form</title>
+</head>
+<body>
+<h1>Generate Revenue Report</h1>
+<form method="POST" action="{{ url_for('revenue_report1') }}">
+    <label for="given_date">Enter Date:</label>
+    <input type="date" id="given_date" name="given_date" required>
+    <button type="submit">Generate Report</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Report 4 Result</title>
+</head>
+<body>
+<h1>Revenue Report 4 Result</h1>
+
+<table border="1">
+    <tr>
+        <th>Date</th>
+        <th>Total Revenue</th>
+    </tr>
+    {% for row in result %}
+    <tr>
+        <td>{{ row['revenue_date'] }}</td>
+        <td>{{ row['total_revenue'] }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<br>
+
+<a href="{{ url_for('landing_page') }}">Go Back to Main Menu</a>
+</body>
+</html>

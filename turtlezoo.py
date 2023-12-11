@@ -25,6 +25,15 @@ def asset_management():
 def daily_zoo_activity():
     return render_template('daily_zoo.html')
 
+def execute_query(query, params=None):
+    connection = mysql.connector.connect(**db_config)
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute(query, params)
+    result = cursor.fetchall()
+    cursor.close()
+    connection.close()
+    return result
+
 @app.route('/d_attraction', methods=['GET', 'POST'])
 def d_attractions():
     if request.method == 'POST':
@@ -88,7 +97,7 @@ def d_concessions():
 
     return render_template('daily_revenue_form.html')
 
-@app.route('/d_attendance')
+@app.route('/d_attendance', methods=['GET', 'POST'])
 def d_attendance():
     if request.method == 'POST':
         specific_date = request.form['specific_date']
@@ -112,7 +121,194 @@ def d_attendance():
 
 @app.route('/management_and_reporting')
 def management_and_reporting():
-    return "Management and Reporting Page"
+    return render_template('mgmt.html')
+
+@app.route('/revenue_report1', methods=['GET', 'POST'])
+def revenue_report1():
+    if request.method == 'POST':
+        given_date = request.form['given_date']
+
+        conn = mysql.connector.connect(**mysql_config)
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+        SELECT
+            rt.name AS revenue_source,
+            COUNT(re.revenue) AS tickets_sold,
+            SUM(re.revenue) AS total_revenue
+        FROM
+            revenue_types rt
+        JOIN
+            revenue_event re ON rt.id = re.r_id
+        WHERE
+            DATE(re.date_time) = DATE(%s)
+        GROUP BY
+            rt.name
+        """
+        cursor.execute(query, (given_date,))
+        results = cursor.fetchall()
+
+        # Close the MySQL connection
+        cursor.close()
+        conn.close()
+
+        # Render the HTML template with the query results
+        return render_template('revenue_report1.html', results=results)
+
+    return render_template('revenue_report_form1.html')
+
+@app.route('/revenue_report2')
+def revenue_report2():
+    return render_template('revenue_report2_index.html')
+
+@app.route('/report2', methods=['POST'])
+def generate_report():
+    start_date = request.form['start_date']
+    end_date = request.form['end_date']
+
+    cursor = mysql.cursor()
+
+    # Replace with your actual SQL query
+    query = f"""
+        SELECT
+            s.name AS species_name,
+            a.status,
+            COUNT(a.id) AS total_animals,
+            SUM(s.food_cost * a.population) AS total_monthly_food_cost,
+            COUNT(DISTINCT v.id) * v.hourly_rate * 160 AS total_veterinarian_cost,
+            COUNT(DISTINCT acs.id) * acs.hourly_rate * 160 AS total_care_specialist_cost
+        FROM
+            species s
+        JOIN
+            animals a ON s.id = a.s_id
+        LEFT JOIN
+            assigned_veterinarians av ON a.id = av.animal_id
+        LEFT JOIN
+            veterinarians v ON av.veterinarian_id = v.id
+        LEFT JOIN
+            assigned_care_specialists acs ON a.id = acs.animal_id
+        WHERE
+            a.date_time >= '{start_date}' AND a.date_time < '{end_date}'
+        GROUP BY
+            s.name, a.status
+    """
+
+    cursor.execute(query)
+    result = cursor.fetchall()
+
+    cursor.close()
+
+    return render_template('report2.html', result=result)
+
+
+@app.route('/revenue_report3', methods=['GET', 'POST'])
+def revenue_report3():
+    if request.method == 'POST':
+        try:
+            # Connect to MySQL
+            connection = mysql.connector.connect(**db_config)
+            cursor = connection.cursor(dictionary=True)
+
+            # Get begin_date and end_date from the form
+            begin_date = request.form['begin_date']
+            end_date = request.form['end_date']
+
+            # Query to fetch top 3 attractions by total revenue
+            query = f"""
+                SELECT
+                    rt.name AS attraction_name,
+                    SUM(re.revenue) AS total_revenue
+                FROM
+                    revenue_types rt
+                JOIN
+                    revenue_event re ON rt.id = re.r_id
+                WHERE
+                    rt.type = 'Attraction'
+                    AND re.date_time BETWEEN '{begin_date}' AND '{end_date}'
+                GROUP BY
+                    rt.name
+                ORDER BY
+                    total_revenue DESC
+                LIMIT 3;
+            """
+
+            cursor.execute(query)
+            results = cursor.fetchall()
+
+            return render_template('revenue_report3.html', results=results)
+
+        except Exception as e:
+            # Handle exceptions appropriately
+            print(f"Error: {e}")
+            return render_template('error.html', error_message=str(e))
+
+        finally:
+            # Close the cursor and connection
+            cursor.close()
+            connection.close()
+
+    return render_template('revenue_report3_form.html')
+
+# Revenue Report 4 Route
+@app.route('/revenue_report4', methods=['GET', 'POST'])
+def revenue_report4():
+    if request.method == 'POST':
+        # Get the selected month and year from the form
+        selected_month = int(request.form['month'])
+        selected_year = int(request.form['year'])
+
+        # Execute the SQL query
+        query = """
+        SELECT
+            DATE(date_time) AS revenue_date,
+            SUM(revenue) AS total_revenue
+        FROM
+            revenue_event
+        WHERE
+            MONTH(date_time) = %s AND YEAR(date_time) = %s
+        GROUP BY
+            revenue_date
+        ORDER BY
+            total_revenue DESC
+        LIMIT 5;
+        """
+
+        params = (selected_month, selected_year)
+        result = execute_query(query, params)
+
+        return render_template('revenue_report4_result.html', result=result)
+
+    return render_template('revenue_report4.html')
+
+@app.route('/revenue_report5', methods=['GET'])
+def revenue_report5():
+    return render_template('revenue_report5_form.html')
+
+def revenue_report5_result():
+    # Get the selected begin date and end date from the form
+    begin_date = request.form['begin_date']
+    end_date = request.form['end_date']
+
+    # Execute the SQL query
+    query = """
+    SELECT
+        rt.type,
+        AVG(re.revenue) AS average_revenue
+    FROM
+        revenue_event re
+    JOIN
+        revenue_types rt ON re.r_id = rt.id
+    WHERE
+        re.date_time BETWEEN %s AND %s
+        AND rt.type IN ('Attraction', 'Concession', 'Attendance')
+    GROUP BY
+        rt.type;
+    """
+
+    params = (begin_date, end_date)
+    result = execute_query(query, params)
+
+    return render_template('revenue_report5_result.html', result=result)
 
 @app.route("/animals")
 def main_page():
@@ -467,4 +663,4 @@ def update_hourly_rate(hourly_rate_id):
     return render_template('update_hourly_rate.html', rate_data=rate_data)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8000 )
