@@ -2,6 +2,7 @@
 export FLASK_DEBUG=1
 
 sudo ln -s /usr/local/Cellar/mysql-client/8.0.19/lib/libmysqlclient.21.dylib /usr/local/lib/libmysqlclient.21.dylib
+
 export DYLD_LIBRARY_PATH=/usr/local/mysql/lib
 
 kill server

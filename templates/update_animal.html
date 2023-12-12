@@ -24,12 +24,12 @@
         <option value="{{ building[0] }}" {% if building[0] == animal[4] %}selected{% endif %}>{{ building[1] }}</option>
         {% endfor %}
     </select><br>
-    <label>Enclosure ID:</label>
-    <select name="enclo_id" required>
-        {% for enclosure in enclosures %}
-        <option value="{{ enclosure[0] }}" {% if enclosure[0] == animal.enclo_id %}selected{% endif %}>{{ enclosure[1] }}</option>
-        {% endfor %}
-    </select><br>
+<!--    <label>Enclosure ID:</label>-->
+<!--    <select name="enclo_id" required>-->
+<!--        {% for enclosure in enclosures %}-->
+<!--        <option value="{{ enclosure[0] }}" {% if enclosure[0] == animal.enclo_id %}selected{% endif %}>{{ enclosure[1] }}</option>-->
+<!--        {% endfor %}-->
+<!--    </select><br>-->
     <button type="submit">Update</button>
 </form>
 <a href="{{ url_for('main_page') }}">Go Back to Animals Menu</a>up
