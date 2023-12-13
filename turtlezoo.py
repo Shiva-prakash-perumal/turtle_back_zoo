@@ -47,38 +47,31 @@ def d_attractions():
     date = request.args.get('date')
 
     if date:
+        print(date)  # Move the print statement here
         cur = mysql.connection.cursor()
-
-        query = (
-            "SELECT re.name AS Attraction_name,rev.date_time AS show_date_time,"
-            "rev.tickets_sold AS attendance,"
-            "rev.revenue AS Revenue"
-            "FROM revenue_types re"
-            "JOIN"
-            "revenue_event rev ON re.id = rev.r_id"
-            "WHERE"
-            "re.type = 'AS' AND DATE(rev.date_time) = DATE(%s)"
-            "ORDER BY"
-            "DATE(rev.date_time)"
-        )
-        cur.execute(query, (date,))
+        cur.execute("SELECT re.name AS Attraction_name, rev.date_time AS show_date_time, "
+                    "rev.tickets_sold AS attendance, rev.revenue AS Revenue "
+                    "FROM revenue_types re "
+                    "JOIN revenue_event rev ON re.id = rev.r_id "
+                    "WHERE re.type = 'AS' AND DATE(rev.date_time) = DATE(%s) "
+                    "ORDER BY DATE(rev.date_time)", (date,))
         results = cur.fetchall()
+        print(results)
         cur.close()
 
         return render_template('view_d_attracrion_revenue.html', results=results, selected_date=date)
 
     return render_template('d_attractions.html')
 
-
-@app.route('/d_concessions')
+@app.route('/d_concessions', methods=['GET', 'POST'])
 def d_concessions():
     if request.method == 'POST':
         date = request.form['date']
 
         cur = mysql.connection.cursor()
         query = (
-            "SELECT re.name AS revenue_type_name"
-            "rv.date_time AS Date, rv.revenue"
+            "SELECT re.name AS revenue_type_name, re.type as type, "
+            "rv.date_time AS Date, rv.revenue as revenue, rv.tickets_sold as Tickets_Sold "
             "FROM revenue_types re "
             "JOIN revenue_event rv ON re.id = rv.r_id "
             "WHERE re.type = 'Conc' AND DATE(rv.date_time) = DATE(%s)"
@@ -99,9 +92,9 @@ def d_attendance():
 
         cur = mysql.connection.cursor()
         query = (
-            "SELECT DATE(rv.date_time) AS specific_date, SUM(rv.tickets_sold) AS total_tickets_sold"
-            "FROM revenue_event rv"
-            "WHERE DATE(rv.date_time) = DATE(%s)"
+            "SELECT DATE(rv.date_time) AS specific_date, SUM(rv.tickets_sold) AS total_tickets_sold "
+            "FROM revenue_event rv "
+            "WHERE DATE(rv.date_time) = DATE(%s) "
             "GROUP BY DATE(rv.date_time)"
         )
         cur.execute(query, (specific_date,))
@@ -123,80 +116,66 @@ def revenue_report1():
     if request.method == 'POST':
         given_date = request.form['given_date']
 
-        conn = mysql.connector.connect(**mysql_config)
-        cursor = conn.cursor(dictionary=True)
-
+        cur = mysql.connection.cursor()
         query = (
-            "SELECT"
-            "re.date_time as date_time, rt.name AS revenue_source,"
-            "rt.type AS revenue_type"
-            "re.tickets_sold AS total_tickets_sold,"
-            "re.revenue AS total_revenue"
-            "FROM"
-            "revenue_types rt"
-            "JOIN"
-            "revenue_event re ON rt.id = re.r_id"
-            "WHERE"
+            "SELECT "
+            "re.date_time as date_time, rt.name AS revenue_source, "
+            "rt.type AS revenue_type, "
+            "re.tickets_sold AS total_tickets_sold, "
+            "re.revenue AS total_revenue "
+            "FROM "
+            "revenue_types rt "
+            "JOIN "
+            "revenue_event re ON rt.id = re.r_id "
+            "WHERE "
             "DATE(re.date_time) = DATE(%s)"
         )
-        cursor.execute(query, (given_date,))
-        results = cursor.fetchall()
 
-        cursor.close()
-        conn.close()
+        cur.execute(query, (given_date,))
+        results = cur.fetchall()
+        print(results)
+        cur.close()
 
         return render_template('revenue_report1.html', results=results)
 
     return render_template('revenue_report_form1.html')
 
-
 @app.route('/revenue_report2')
 def revenue_report2():
-    return render_template('revenue_report2_index.html')
 
-
-@app.route('/report2', methods=['POST'])
-def generate_report():
-    start_date = request.form['start_date']
-    end_date = request.form['end_date']
-
-    cursor = mysql.cursor()
-
+    cur = mysql.connection.cursor()
     query = (
-        "SELECT"
-        "s.name AS species_name,"
-        "COUNT(a.id) AS total_population,"
-        "s.food_cost * COUNT(a.id) AS total_monthly_food_cost,"
-        "a.status,"
-        "COUNT(a.id) AS total_by_status,"
-        "COUNT(DISTINCT e.id) * h.hourly_rate * 160 AS total_veterinarian_cost,"
-        "COUNT(DISTINCT f.id) * i.hourly_rate * 160 AS total_care_specialist_cost"
-        "FROM"
-        "species s"
-        "JOIN"
-        "animal a ON s.id = a.s_id"
-        "LEFT JOIN"
-        "cares_for cf ON s.id = cf.s_id"
-        "LEFT JOIN"
-        "employee e ON cf.e_id = e.id"
-        "LEFT JOIN"
-        "employee f ON cf.e_id = f.id"
+        "SELECT "
+        "s.name AS species_name, "
+        "COUNT(a.id) AS total_population, "
+        "s.food_cost * COUNT(a.id) AS total_monthly_food_cost, "
+        "a.status, "
+        "COUNT(a.id) AS total_by_status, "
+        "COUNT(DISTINCT e.id) * MAX(h.rate) * 160 AS total_veterinarian_cost, "
+        "COUNT(DISTINCT f.id) * MAX(i.rate) * 160 AS total_care_specialist_cost "
+        "FROM "
+        "species s "
+        "JOIN "
+        "animal a ON s.id = a.s_id "
         "LEFT JOIN "
-        "hourly_rate h ON h.id = e.h_id"
+        "cares_for cf ON s.id = cf.s_id "
         "LEFT JOIN "
-        "hourly_rate i ON i.id = f.h_id"
-        "WHERE"
-        "DATE(a.start_date) >= DATE(%s) AND a.date_time < DATE(%s)"
-        "AND e.job_type = 'Veterinarian' AND f.job_type = 'Animal care specialist')"
-        "GROUP BY"
-        "s.id, a.status"
-        "ORDER BY"
+        "employee e ON cf.e_id = e.id AND e.job_type = 'Veterinarian' "
+        "LEFT JOIN "
+        "employee f ON cf.e_id = f.id AND f.job_type = 'Animal care specialist' "
+        "LEFT JOIN "
+        "hourly_rate h ON h.id = e.h_id "
+        "LEFT JOIN "
+        "hourly_rate i ON i.id = f.h_id "
+        "GROUP BY "
+        "s.id, a.status "
+        "ORDER BY "
         "s.id, a.status;"
-        )
-    cursor.execute(query,(start_date,end_date,))
-    result = cursor.fetchall()
-
-    cursor.close()
+    )
+    cur.execute(query)
+    result = cur.fetchall()
+    print(result)
+    cur.close()
 
     return render_template('report2.html', result=result)
 
@@ -205,31 +184,30 @@ def generate_report():
 def revenue_report3():
     if request.method == 'POST':
         try:
-            connection = mysql.connector.connect(**db_config)
-            cursor = connection.cursor(dictionary=True)
+            cur = mysql.connection.cursor()
 
             begin_date = request.form['begin_date']
             end_date = request.form['end_date']
 
             query = (
-                     "SELECT"
-                     "rt.name AS attraction_name,"
-                     "SUM(re.revenue) AS total_revenue"
-                     "FROM"
-                     "revenue_types rt"
-                     "JOIN"
-                     "revenue_event re ON rt.id = re.r_id"
-                     "WHERE"
-                     "rt.type = 'AS'"
-                     "AND Date(re.date_time) BETWEEN DATE(%s) AND DATE(%s)"
-                     "GROUP BY"
-                     "rt.name"
-                     "ORDER BY"
-                     "total_revenue DESC"
-                     "LIMIT 3;"
-                     )
-            cursor.execute(query,(begin_date,end_date,))
-            results = cursor.fetchall()
+                "SELECT "
+                "rt.name AS attraction_name, "
+                "SUM(re.revenue) AS total_revenue "
+                "FROM "
+                "revenue_types rt "
+                "JOIN "
+                "revenue_event re ON rt.id = re.r_id "
+                "WHERE "
+                "rt.type = 'AS' "
+                "AND DATE(re.date_time) BETWEEN DATE(%s) AND DATE(%s) "
+                "GROUP BY "
+                "rt.name "
+                "ORDER BY "
+                "total_revenue DESC "
+                "LIMIT 3;"
+            )
+            cur.execute(query,(begin_date,end_date,))
+            results = cur.fetchall()
 
             return render_template('revenue_report3.html', results=results)
 
@@ -238,8 +216,7 @@ def revenue_report3():
             return render_template('error.html', error_message=str(e))
 
         finally:
-            cursor.close()
-            connection.close()
+            cur.close()
 
     return render_template('revenue_report3_form.html')
 
@@ -248,24 +225,26 @@ def revenue_report4():
     if request.method == 'POST':
         selected_month = int(request.form['month'])
         selected_year = int(request.form['year'])
-
+        cur = mysql.connection.cursor()
         query = (
-                 "SELECT"
-                 "DATE(date_time) AS revenue_date,"
-                 "SUM(revenue) AS total_revenue"
-                 "FROM"
-                 "revenue_event]"
-                 "WHERE"
-                 "MONTH(date_time) = DATE(%s) AND YEAR(date_time) = DATE(%s)"
-                 "GROUP BY"
-                 "revenue_date"
-                 "ORDER BY"
-                 "total_revenue DESC"
-                 "LIMIT 5;"
-                 )
+            "SELECT "
+            "DATE(date_time) AS revenue_date, "
+            "SUM(revenue) AS total_revenue "
+            "FROM "
+            "revenue_event "
+            "WHERE "
+            "MONTH(date_time) = %s AND YEAR(date_time) = %s "
+            "GROUP BY "
+            "revenue_date "
+            "ORDER BY "
+            "total_revenue DESC "
+            "LIMIT 5;"
+        )
 
         params = (selected_month, selected_year)
-        result = execute_query(query, params)
+        cur.execute(query, params)
+        result = cur.fetchall()
+        print(result)
 
         return render_template('revenue_report4_result.html', result=result)
 
@@ -277,26 +256,30 @@ def revenue_report5():
     return render_template('revenue_report5_form.html')
 
 
+@app.route('/revenue_report5_result', methods=['POST'])
 def revenue_report5_result():
     begin_date = request.form['begin_date']
     end_date = request.form['end_date']
+    cur = mysql.connection.cursor()
     query = (
-        "SELECT"
-        "rt.type,"
-        "AVG(re.revenue) AS average_revenue"
-        "FROM"
-        "revenue_event re"
-        "JOIN"
-        "revenue_types rt ON re.r_id = rt.id"
-        "WHERE"
-        "DATE(re.date_time) BETWEEN DATE(%s) AND DATE(%s)"
-        "AND rt.type IN ('AS', 'Conc', 'Admission')"
-        "GROUP BY"
-        "rt.type"
+        "SELECT "
+        "rt.type, "
+        "AVG(re.revenue) AS average_revenue "
+        "FROM "
+        "revenue_event re "
+        "JOIN "
+        "revenue_types rt ON re.r_id = rt.id "
+        "WHERE "
+        "DATE(re.date_time) BETWEEN DATE(%s) AND DATE(%s) "
+        "AND rt.type IN ('AS', 'Conc', 'ZA') "
+        "GROUP BY "
+        "rt.type;"
     )
 
+
     params = (begin_date, end_date)
-    result = execute_query(query, params)
+    cur.execute(query, params)
+    result = cur.fetchall()
 
     return render_template('revenue_report5_result.html', result=result)
 
@@ -393,7 +376,7 @@ def employees():
     return render_template('employees.html')
 
 
-@app.route('/employees')
+@app.route('/view_employees')
 def view_employees():
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM employee")
@@ -405,11 +388,12 @@ def view_employees():
 @app.route('/insert_employee', methods=['GET', 'POST'])
 def insert_employee():
     if request.method == 'POST':
+        id = request.form['id']
         h_id = request.form['h_id']
-        super_id = request.form['super_id']
+        super_id = request.form['supervisor_id']
         job_type = request.form['job_type']
         start_date = request.form['start_date']
-        r_id = request.form['r_id']
+        r_id = request.form['revenue_type_id']
         f_name = request.form['f_name']
         m_name = request.form['m_name']
         l_name = request.form['l_name']
@@ -419,9 +403,9 @@ def insert_employee():
         zip_code = request.form['zip']
 
         cur = mysql.connection.cursor()
-        cur.execute("INSERT INTO employee (h_id, super_id, job_type, start_date, r_id, "
-                    "f_name, m_name, l_name, street, city, state, zip) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                    (h_id, super_id, job_type, start_date, r_id, f_name, m_name, l_name, street, city, state, zip_code))
+        cur.execute("INSERT INTO employee (id, h_id, super_id, job_type, start_date, r_id, "
+                    "f_name, m_name, l_name, street, city, state, zip) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (id, h_id, super_id, job_type, start_date, r_id, f_name, m_name, l_name, street, city, state, zip_code))
         mysql.connection.commit()
         cur.close()
 
@@ -464,6 +448,7 @@ def update_employee(employee_id):
         zip_code = request.form['zip']
 
         cur = mysql.connection.cursor()
+
         cur.execute("UPDATE employee SET h_id=%s, super_id=%s, job_type=%s, start_date=%s, r_id=%s, "
                     "f_name=%s, m_name=%s, l_name=%s, street=%s, city=%s, state=%s, zip=%s WHERE id=%s",
                     (h_id, super_id, job_type, start_date, r_id, f_name, m_name, l_name, street, city, state, zip_code,
@@ -548,20 +533,42 @@ def view_revenue_types():
 @app.route('/insert_revenue_type', methods=['GET', 'POST'])
 def insert_revenue_type():
     if request.method == 'POST':
+        id = request.form['id']
         name = request.form['name']
         type = request.form['type']
         b_id = request.form['b_id']
-        adult_price = request.form['adult_price']
-        child_price = request.form['child_price']
-        senior_price = request.form['senior_price']
-        perday = request.form['perday']
-        product = request.form['product']
+        if 'null_adult_price' in request.form:
+            adult_price = None  # Set to NULL
+        else:
+            adult_price = request.form['adult_price']
+        if 'null_child_price' in request.form:
+            child_price = None  # Set to NULL
+        else:
+            child_price = request.form['child_price']
+        if 'null_senior_price' in request.form:
+            senior_price = None  # Set to NULL
+        else:
+            senior_price = request.form['senior_price']
+        if 'null_perday' in request.form:
+            perday = None  # Set to NULL
+        else:
+            perday = request.form['perday']
+        if 'null_product' in request.form:
+            product = None  # Set to NULL
+        else:
+            product = request.form['product']
+
+        # adult_price = request.form['adult_price']
+        # child_price = request.form['child_price']
+        # senior_price = request.form['senior_price']
+        # perday = request.form['perday']
+        # product = request.form['product']
 
         cur = mysql.connection.cursor()
         cur.execute(
-            "INSERT INTO revenue_types (name, type, b_id, adult_price, child_price, senior_price, perday, product) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)",
-            (name, type, b_id, adult_price, child_price, senior_price, perday, product))
+            "INSERT INTO revenue_types (id, name, type, b_id, adult_price, child_price, senior_price, `#perday`, product) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+            (id ,name, type, b_id, adult_price, child_price, senior_price, perday, product))
         mysql.connection.commit()
         cur.close()
 
@@ -582,16 +589,37 @@ def update_revenue_type(revenue_type_id):
         name = request.form['name']
         type = request.form['type']
         b_id = request.form['b_id']
-        adult_price = request.form['adult_price']
-        child_price = request.form['child_price']
-        senior_price = request.form['senior_price']
-        perday = request.form['perday']
-        product = request.form['product']
+        # adult_price = request.form['adult_price']
+        if 'null_adult_price' in request.form:
+            adult_price = None  # Set to NULL
+        else:
+            adult_price = request.form['adult_price']
+        if 'null_child_price' in request.form:
+            child_price = None  # Set to NULL
+        else:
+            child_price = request.form['child_price']
+        if 'null_senior_price' in request.form:
+            senior_price = None  # Set to NULL
+        else:
+            senior_price = request.form['senior_price']
+        if 'null_perday' in request.form:
+            perday = None  # Set to NULL
+        else:
+            perday = request.form['perday']
+        if 'null_product' in request.form:
+            product = None  # Set to NULL
+        else:
+            product = request.form['product']
+
+        # child_price = request.form['child_price']
+        # senior_price = request.form['senior_price']
+        # perday = request.form['perday']
+        # product = request.form['product']
 
         cur = mysql.connection.cursor()
         cur.execute(
             "UPDATE revenue_types SET name=%s, type=%s, b_id=%s, adult_price=%s, child_price=%s, senior_price=%s, "
-            "perday=%s, product=%s WHERE id=%s",
+            "`#perday`=%s, product=%s WHERE id=%s",
             (name, type, b_id, adult_price, child_price, senior_price, perday, product, revenue_type_id))
         mysql.connection.commit()
         cur.close()

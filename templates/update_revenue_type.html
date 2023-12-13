@@ -15,15 +15,20 @@
     <label>Building ID:</label>
     <input type="text" name="b_id" value="{{ revenue_type[3] }}" required><br>
     <label>Adult Price:</label>
-    <input type="text" name="adult_price" value="{{ revenue_type[4] }}" required><br>
+    <input type="text" name="adult_price" value="{{ revenue_type[4] }}">
+    <input type="checkbox" name="null_adult_price"> Set to NULL<br>
     <label>Child Price:</label>
-    <input type="text" name="child_price" value="{{ revenue_type[5] }}" required><br>
+    <input type="text" name="child_price" value="{{ revenue_type[5] }}" >
+    <input type="checkbox" name="null_child_price"> Set to NULL<br>
     <label>Senior Price:</label>
-    <input type="text" name="senior_price" value="{{ revenue_type[6] }}" required><br>
-    <label>Per Day:</label>
-    <input type="text" name="perday" value="{{ revenue_type[7] }}" required><br>
+    <input type="text" name="senior_price" value="{{ revenue_type[6] }}" >
+    <input type="checkbox" name="null_senior_price"> Set to NULL<br>
+    <label>Shows Per Day:</label>
+    <input type="text" name="perday" value="{{ revenue_type[7] }}" >
+    <input type="checkbox" name="null_perday"> Set to NULL<br>
     <label>Product:</label>
-    <input type="text" name="product" value="{{ revenue_type[8] }}" required><br>
+    <input type="text" name="product" value="{{ revenue_type[8] }}" >
+    <input type="checkbox" name="null_product"> Set to NULL<br>
     <button type="submit">Update</button>
 </form>
 <br>

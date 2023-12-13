@@ -8,6 +8,8 @@
 <body>
 <h1>Insert Revenue Type</h1>
 <form method="POST">
+    <label>ID</label>
+    <input type="text" name="id" required><br>
     <label>Name:</label>
     <input type="text" name="name" required><br>
     <label>Type:</label>
@@ -15,15 +17,20 @@
     <label>Building ID:</label>
     <input type="text" name="b_id" required><br>
     <label>Adult Price:</label>
-    <input type="text" name="adult_price" required><br>
+    <input type="text" name="adult_price" >
+    <input type="checkbox" name="null_adult_price"> Set to NULL<br>
     <label>Child Price:</label>
-    <input type="text" name="child_price" required><br>
+    <input type="text" name="child_price" >
+    <input type="checkbox" name="null_child_pricee"> Set to NULL<br>
     <label>Senior Price:</label>
-    <input type="text" name="senior_price" required><br>
+    <input type="text" name="senior_price" >
+    <input type="checkbox" name="null_senior_price"> Set to NULL<br>
     <label>Per Day:</label>
-    <input type="text" name="perday" required><br>
+    <input type="text" name="perday" >
+    <input type="checkbox" name="null_perday"> Set to NULL<br>
     <label>Product:</label>
-    <input type="text" name="product" required><br>
+    <input type="text" name="product" >
+    <input type="checkbox" name="null_product"> Set to NULL<br>
     <button type="submit">Insert</button>
 </form>
 <br>

@@ -79,7 +79,7 @@
     <label>Enclosure ID:</label>
     <select name="enclo_id" required>
         {% for enclosure in enclosures %}
-        <option value="{{ enclosure[0] }}">{{ enclosure[1] }}</option>
+        <option value="{{ enclosure[0] }}">{{ enclosure[0] }}</option>
         {% endfor %}
     </select><br>
     <button type="submit">Submit</button>

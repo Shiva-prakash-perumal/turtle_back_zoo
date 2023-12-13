@@ -15,8 +15,8 @@
     </tr>
     {% for row in result %}
     <tr>
-        <td>{{ row['revenue_date'] }}</td>
-        <td>{{ row['total_revenue'] }}</td>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
     </tr>
     {% endfor %}
 </table>
