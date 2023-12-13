@@ -415,7 +415,7 @@ def insert_employee():
     cur = mysql.connection.cursor()
     cur.execute("SELECT id, super_id FROM employee")
     supervisor = cur.fetchall()
-    cur.execute("SELECT id, rate FROM hourly_rate")
+    cur.execute("SELECT id, id FROM hourly_rate")
     hourly_rate = cur.fetchall()
     print(hourly_rate)
     cur.execute("SELECT id, name FROM revenue_types")
